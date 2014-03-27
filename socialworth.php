@@ -77,7 +77,7 @@ class SocialWorth
                 'method'   => 'GET',
                 'url'      => "http://lsapi.seomoz.com/linkscape/url-metrics/{$urlseo}?Cols=32&AccessID=" . SEOMOZ_ID . "&Expires={$expires}&Signature={$seomoz_sig}",
                 'callback' => function($resp) {
-                    if(isset($resp->ueid)) {
+                    if (isset($resp->ueid)) {
                         return (int)$resp->ueid;
                     } else {
                         return 0;
@@ -89,8 +89,8 @@ class SocialWorth
                 'name'     => 'facebook',
                 'method'   => 'GET',
                 'url'      => 'https://graph.facebook.com/fql?q=' . urlencode("SELECT like_count, total_count, share_count, click_count, comment_count FROM link_stat WHERE url = \"{$url}\""),
-                "callback" => function($resp) {
-                    if(isset($resp->data[0]->total_count)) {
+                'callback' => function($resp) {
+                    if (isset($resp->data[0]->total_count)) {
                         return (int)$resp->data[0]->total_count;
                     } else {
                         return 0;
@@ -102,9 +102,9 @@ class SocialWorth
                 'name'     => 'pinterest',
                 'method'   => 'GET',
                 'url'      => "http://api.pinterest.com/v1/urls/count.json?callback=&url={$url}",
-                "callback" => function($resp) {
+                'callback' => function($resp) {
                     $resp = json_decode(substr($resp, 1, -1));
-                    if(isset($resp->count)) {
+                    if (isset($resp->count)) {
                         return (int)$resp->count;
                     } else {
                         return 0;
@@ -116,8 +116,8 @@ class SocialWorth
                 'name'     => 'twitter',
                 'method'   => 'GET',
                 'url'      => "http://cdn.api.twitter.com/1/urls/count.json?url={$url}",
-                "callback" => function($resp) {
-                    if($resp && isset($resp->count)) {
+                'callback' => function($resp) {
+                    if ($resp && isset($resp->count)) {
                         return (int)$resp->count;
                     } else {
                         return 0;
@@ -129,8 +129,8 @@ class SocialWorth
                 'name'     => 'linkedin',
                 'method'   => 'GET',
                 'url'      => "http://www.linkedin.com/countserv/count/share?url={$url}&format=json",
-                "callback" => function($resp) {
-                    if($resp && isset($resp->count)) {
+                'callback' => function($resp) {
+                    if ($resp && isset($resp->count)) {
                         return (int)$resp->count;
                     } else {
                         return 0;
@@ -142,8 +142,8 @@ class SocialWorth
                 'name'     => 'stumbleupon',
                 'method'   => 'GET',
                 'url'      => "http://www.stumbleupon.com/services/1.01/badge.getinfo?url={$url}",
-                "callback" => function($resp) {
-                    if($resp && isset($resp->result) && isset($resp->result->views)) {
+                'callback' => function($resp) {
+                    if ($resp && isset($resp->result) && isset($resp->result->views)) {
                         return (int)$resp->result->views;
                     } else {
                         return 0;
@@ -155,11 +155,11 @@ class SocialWorth
                 'name'     => 'reddit',
                 'method'   => 'GET',
                 'url'      => "http://www.reddit.com/api/info.json?url={$url}",
-                "callback" => function($resp) {
-                    if($resp && isset($resp->data->children)) {
+                'callback' => function($resp) {
+                    if ($resp && isset($resp->data->children)) {
                         $c = 0;
-                        foreach($resp->data->children as $story) {
-                            if(isset($story->data) && isset($story->data->ups)) {
+                        foreach ($resp->data->children as $story) {
+                            if (isset($story->data) && isset($story->data->ups)) {
                                 $c = $c + (int)$story->data->ups;
                             }
                         }
@@ -174,15 +174,15 @@ class SocialWorth
                 'name'     => 'hackernews',
                 'method'   => 'GET',
                 'url'      => "http://api.thriftdb.com/api.hnsearch.com/items/_search?q=&filter[fields][url]={$url}",
-                "callback" => function($resp) {
-                    if($resp && isset($resp->results)) {
+                'callback' => function($resp) {
+                    if ($resp && isset($resp->results)) {
                         $c = 0;
                         foreach($resp->results as $story) {
                             $c++;
-                            if(isset($story->item) && isset($story->item->points)) {
+                            if (isset($story->item) && isset($story->item->points)) {
                                 $c = $c + (int)$story->item->points;
                             }
-                            if(isset($story->item) && isset($story->item->num_comments)) {
+                            if (isset($story->item) && isset($story->item->num_comments)) {
                                 $c = $c + (int)$story->item->num_comments;
                             }
                         }
@@ -202,18 +202,18 @@ class SocialWorth
                     'method' => 'pos.plusones.get',
                     'id'     => 'p',
                     'params' => array(
-                        "nolog"   => true,
-                        "id"      => $url,
-                        "source"  => "widget",
-                        "userId"  => "@viewer",
-                        "groupId" => "@self"
+                        'nolog'   => true,
+                        'id'      => $url,
+                        'source'  => 'widget',
+                        'userId'  => '@viewer',
+                        'groupId' => '@self'
                     ),
-                    "jsonrpc"    => "2.0",
-                    "key"        => "p",
-                    "apiVersion" => "v1"
+                    'jsonrpc'    => '2.0',
+                    'key'        => 'p',
+                    'apiVersion' => 'v1'
                     )),
-                "callback" => function($resp) {
-                    if(isset($resp->result->metadata->globalCounts->count)) {
+                'callback' => function($resp) {
+                    if (isset($resp->result->metadata->globalCounts->count)) {
                         return (int)$resp->result->metadata->globalCounts->count;
                     } else {
                         return 0;

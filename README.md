@@ -1,53 +1,50 @@
-# Socialworth
+# SocialWorth
 
-A PHP script for determining the popularity of a given URL across social networks and search engines.
+SocialWorth determines the popularity of a given URL across social networks and search engines.
 
-This script can be used as is or as a foundation for your own code. It's intended to demonstrate how one can harness existing APIs to acquire social networking metrics without the need for bloated client-side JavaScript SDKs or latency inducing middle man services.
+The following networks are currently supported:
 
-It currently supports:
 * Facebook likes, comments, click throughs and shares (combined by default; seperately with minor modifications)
-* Twitter mentions of the url (via tweets, retweets, shares, or anything else.)
+* Twitter mentions of the url (via tweets, retweets, shares, or anything else.)  
 * Reddit (combines the number of submitted stories and upvotes)
 * Hacker News (combines the number of submitted stories, points and comments)
-* Google +1s globally
+* Google +1s
 * StumbleUpon views
 * LinkedIn shares
 * Pinterest shares (note: the pinterest api is not officially open nor is it documented; it's also very unreliable in it's responses)
 * Mozscape (for backlinks; requires a free account with their service)
 
----
+## Configuration
 
-The script itself is named socialworth.php by default. You can use demo.html to see it in action.
+If you wish to use the Mozscape API, you'll need to modify the script to include your account details. __The rest of the networks use public APIs and require no configuration.__
 
-If you wish to include the backlinks check, you'll need to sign up for a seomoz Mozscape API account and modify the script to include your account details. None of the other services require setup.
+## Usage
+When initializing the SocialWorth object, you may optionally provide an array of networks to query (otherwise it defaults to all). URL is the only required parameter. 
 
----
-
-Pass a url parameter to the script ...
 
 ```
-http://localhost/socialworth.php?url=http://github.com
+$networks = array('facebook', 'googleplus', 'pinterest', 'twitter');
+$url      = 'http://www.reddit.com/r/IAmA/comments/1rm0id/i_just_drove_3121_miles_solo_from_mexico_to/';
+
+$social = new SocialWorth($networks);
+$worth  = $social->value($url);
 ```
 
-... to receive a JSON object breaking down the metrics:
+The `value()` method returns an array of values for each network and an aggregate total:
 
-```json
-{
-	count: 20733,
-	services: {
-		mozscape: 0,
-		facebook: 588,
-		pinterest: 0,
-		twitter: 570,
-		linkedin: 451,
-		stumbleupon: 15503,
-		reddit: 16,
-		hackernews: 497,
-		googleplus: 3108
-	}
-}
 ```
+Array
+(
+    [facebook]    => 314
+    [googleplus]  => 9
+    [hackernews]  => 0
+    [linkedin]    => 6
+    [mozscape]    => 0
+    [pinterest]   => 0
+    [reddit]      => 32
+    [stumbleupon] => 76
+    [twitter]     => 432
+    [total]       => 869
+)
 
----
-
-This work was inspired by Jonathan Moore's gist: https://gist.github.com/2640302
+```

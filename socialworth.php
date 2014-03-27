@@ -45,32 +45,93 @@ class SocialWorth
      */
     protected $connection;
 
-    public $count;
-
-    public $services;
-
-    public function __construct($url)
+    /**
+     * Handles the object initialization.
+     *
+     * @param array $networks The desired network sources.
+     * 
+     * @return void
+     */
+    public function __construct(array $networks = array())
     {
-        // Get these values from http://www.seomoz.org/api/keys/
-        define('SEOMOZ_ID', '');
-        define('SEOMOZ_KEY', '');
+        $this->network_targets = !empty($networks) ? $networks : $this->network_config;
+    }
 
-        //ob_start();
+    /**
+     * Handles the object destruction.
+     */
+    public function __destruct()
+    {
+        $this->closeConnection();
+    }
 
-        $urlseo = parse_url($url);
-        if(!isset($urlseo['path'])) {
-            $url .= '/';
-            $urlseo = parse_url($url);
+    /**
+     * Values the social worth of a given URL.
+     *
+     * @param string $url The URL to value.
+     *
+     * @return SocialWorth
+     */
+    public function value($url)
+    {
+        $this->url = $url;
+
+        $worth = array();
+
+        foreach($this->networks() as $name) {
+            $request = $this->network($name);
+
+            $params = array();
+            if (isset($request['headers'])) $params['headers'] = $request['headers'];
+            if (isset($request['payload'])) $params['payload'] = $request['payload'];
+
+            $worth[$request['name']] = $request['callback'](
+                $this->request($request['method'], $request['url'], $params)
+            );
         }
 
-        $counter = 0;
-        $expires = time() + 300;
-        $urlseo = "{$urlseo['host']}{$urlseo['path']}";
-        $seomoz_sig = (SEOMOZ_ID && SEOMOZ_KEY ? urlencode(base64_encode(hash_hmac('sha1', SEOMOZ_ID . "\n" . $expires, SEOMOZ_KEY, true))) : '');
-        $breakdown = array();
+        $worth['total'] = array_sum($worth);
 
-        $endpoints = array(
+        return $worth;
+    }
 
+    /**
+     * Gets the networks from which to request social worth.
+     *
+     * @return array
+     */
+    protected function networks()
+    {
+        return $this->network_targets;
+    }
+
+    /**
+     * Gets the details request details for a network.
+     *
+     * @param string $name Network name.
+     *
+     * @return array
+     */
+    protected function network($name)
+    {
+        $url = $this->url;
+
+        if ($name == 'mozscape') {
+            define('SEOMOZ_ID', 'YOUR ID HERE');
+            define('SEOMOZ_KEY', 'YOUR KEY HERE');
+
+            $urlseo = parse_url($url);
+            if(!isset($urlseo['path'])) {
+                $url .= '/';
+                $urlseo = parse_url($url);
+            }
+
+            $expires    = time() + 300;
+            $urlseo     = "{$urlseo['host']}{$urlseo['path']}";
+            $seomoz_sig = (SEOMOZ_ID && SEOMOZ_KEY ? urlencode(base64_encode(hash_hmac('sha1', SEOMOZ_ID . "\n" . $expires, SEOMOZ_KEY, true))) : '');
+        }
+
+        $networks = array(
             'mozscape' => array(
                 'name'     => 'mozscape',
                 'method'   => 'GET',
@@ -213,36 +274,11 @@ class SocialWorth
             ),
         );
 
-        foreach($endpoints as $endpoint) {
-            $params = array();
-            if(isset($endpoint['headers'])) $params['headers'] = $endpoint['headers'];
-            if(isset($endpoint['payload'])) $params['payload'] = $endpoint['payload'];
-
-            $actions = $endpoint["callback"]($this->request($endpoint['method'], $endpoint["url"], $params));
-            $breakdown[$endpoint['name']] = $actions;
-            $counter = $counter + $actions;
+        if (!array_key_exists($name, $networks)) {
+            return false;
         }
 
-        $this->count    = $counter;
-        $this->services = $breakdown;
-    }
-
-    /**
-     * Handles the object destruction.
-     */
-    public function __destruct()
-    {
-        $this->closeConnection();
-    }
-
-    /**
-     * Gets the networks from which to request social worth.
-     *
-     * @return array
-     */
-    protected function networks()
-    {
-        return $this->network_targets;
+        return $networks[$name];
     }
 
     /**

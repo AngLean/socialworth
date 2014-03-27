@@ -159,9 +159,13 @@ class SocialWorth
             'pinterest' => array(
                 'name'     => 'pinterest',
                 'method'   => 'GET',
-                'url'      => "http://api.pinterest.com/v1/urls/count.json?callback=&url={$url}",
+                'url'      => "http://api.pinterest.com/v1/urls/count.json?url={$url}",
                 'callback' => function($resp) {
-                    $resp = json_decode(substr($resp, 1, -1));
+                    $start  = strpos($resp, '{');
+                    $length = strrpos($resp, '}') - $start + 1;
+                    $json   = substr($resp, $start, $length);
+
+                    $resp = json_decode($json);
                     if (isset($resp->count)) {
                         return (int)$resp->count;
                     } else {

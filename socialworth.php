@@ -244,6 +244,16 @@ class SocialWorth
     }
 
     /**
+     * Gets the networks from which to request social worth.
+     *
+     * @return array
+     */
+    protected function networks()
+    {
+        return $this->network_targets;
+    }
+
+    /**
      * Gets the request connection.
      *
      * @return Resource

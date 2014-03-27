@@ -236,6 +236,14 @@ class SocialWorth
     }
 
     /**
+     * Handles the object destruction.
+     */
+    public function __destruct()
+    {
+        $this->closeConnection();
+    }
+
+    /**
      * Gets the request connection.
      *
      * @return Resource

@@ -21,6 +21,44 @@
 
 class SocialWorth
 {
+    /**
+     * The available network sources.
+     *
+     * @var array
+     */
+    protected $network_config = array(
+        'facebook',
+        'googleplus',
+        'hackernews',
+        'linkedin',
+        'mozscape',
+        'pinterest',
+        'reddit',
+        'stumbleupon',
+        'twitter',
+    );
+
+    /**
+     * The chosen network sources.
+     *
+     * @var array
+     */
+    protected $network_targets;
+
+    /**
+     * The URL to value.
+     *
+     * @var string
+     */
+    protected $url;
+
+    /**
+     * The open request connection.
+     *
+     * @var Resource|null
+     */
+    protected $connection;
+
     public $count;
 
     public $services;

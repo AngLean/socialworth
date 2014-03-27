@@ -235,6 +235,30 @@ class SocialWorth
         $this->services = $breakdown;
     }
 
+    /**
+     * Gets the request connection.
+     *
+     * @return Resource
+     */
+    protected function getConnection()
+    {
+        if (!$this->connection) {
+            $this->connection = curl_init();
+        }
+
+        return $this->connection;
+    }
+
+    /**
+     * Closes the request connection.
+     *
+     * @return void
+     */
+    protected function closeConnection()
+    {
+        curl_close($this->connection);
+    }
+
     protected function apiCall($method, $url, $params = array())
     {
         global $api;

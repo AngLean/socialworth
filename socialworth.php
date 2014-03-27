@@ -71,8 +71,7 @@ class SocialWorth
 
         $endpoints = array(
 
-            // Mozscape Backlinks
-            array(
+            'mozscape' => array(
                 'name'     => 'mozscape',
                 'method'   => 'GET',
                 'url'      => "http://lsapi.seomoz.com/linkscape/url-metrics/{$urlseo}?Cols=32&AccessID=" . SEOMOZ_ID . "&Expires={$expires}&Signature={$seomoz_sig}",
@@ -82,10 +81,9 @@ class SocialWorth
                     } else {
                         return 0;
                     }
-                }),
-
-            // Facebook
-            array(
+                }
+            ),
+            'facebook' => array(
                 'name'     => 'facebook',
                 'method'   => 'GET',
                 'url'      => 'https://graph.facebook.com/fql?q=' . urlencode("SELECT like_count, total_count, share_count, click_count, comment_count FROM link_stat WHERE url = \"{$url}\""),
@@ -95,10 +93,9 @@ class SocialWorth
                     } else {
                         return 0;
                     }
-                }),
-
-            // Pinterest
-            array(
+                }
+            ),
+            'pinterest' => array(
                 'name'     => 'pinterest',
                 'method'   => 'GET',
                 'url'      => "http://api.pinterest.com/v1/urls/count.json?callback=&url={$url}",
@@ -109,10 +106,9 @@ class SocialWorth
                     } else {
                         return 0;
                     }
-                }),
-
-            // Twitter
-            array(
+                }
+            ),
+            'twitter' => array(
                 'name'     => 'twitter',
                 'method'   => 'GET',
                 'url'      => "http://cdn.api.twitter.com/1/urls/count.json?url={$url}",
@@ -122,10 +118,9 @@ class SocialWorth
                     } else {
                         return 0;
                     }
-                }),
-
-            // LinkedIn
-            array(
+                }
+            ),
+            'linkedin' => array(
                 'name'     => 'linkedin',
                 'method'   => 'GET',
                 'url'      => "http://www.linkedin.com/countserv/count/share?url={$url}&format=json",
@@ -135,10 +130,9 @@ class SocialWorth
                     } else {
                         return 0;
                     }
-                }),
-
-            // StumbleUpon
-            array(
+                }
+            ),
+            'stumbleupon' => array(
                 'name'     => 'stumbleupon',
                 'method'   => 'GET',
                 'url'      => "http://www.stumbleupon.com/services/1.01/badge.getinfo?url={$url}",
@@ -148,10 +142,9 @@ class SocialWorth
                     } else {
                         return 0;
                     }
-                }),
-
-            // reddit
-            array(
+                }
+            ),
+            'reddit' => array(
                 'name'     => 'reddit',
                 'method'   => 'GET',
                 'url'      => "http://www.reddit.com/api/info.json?url={$url}",
@@ -167,10 +160,9 @@ class SocialWorth
                     } else {
                         return 0;
                     }
-                }),
-
-            // Hacker News
-            array(
+                }
+            ),
+            'hackernews' => array(
                 'name'     => 'hackernews',
                 'method'   => 'GET',
                 'url'      => "http://api.thriftdb.com/api.hnsearch.com/items/_search?q=&filter[fields][url]={$url}",
@@ -190,10 +182,9 @@ class SocialWorth
                     } else {
                         return 0;
                     }
-                }),
-
-            // Google +1s
-            array(
+                }
+            ),
+            'googleplus' => array(
                 'name'     => 'googleplus',
                 'method'   => 'POST',
                 'headers'  => array('Content-type: application/json'),
@@ -218,7 +209,8 @@ class SocialWorth
                     } else {
                         return 0;
                     }
-                }),
+                }
+            ),
         );
 
         foreach($endpoints as $endpoint) {

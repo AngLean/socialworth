@@ -1,24 +1,10 @@
 <?php
 
-/*
-    Socialworth - A demo script for determining the popularity of a url
-    against social networks. By Evan Sims (hello@evansims.com)
-
-    https://github.com/evansims/socialworth
-
-    ---
-
-    Although this script is intended primarily to be used as a template
-    for building your own variations of this concept, the script can
-    be queried as-is for a JSON response. See demo.html for a working
-    example.
-
-    ---
-
-    This script is an expansion of Jonathan Moore's gist:
-    https://gist.github.com/2640302
-*/
-
+/**
+ * Determines the social worth of a URL.
+ * 
+ * @see https://github.com/dsposito/socialworth
+ */
 class SocialWorth
 {
     /**

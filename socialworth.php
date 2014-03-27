@@ -226,7 +226,7 @@ class SocialWorth
             if(isset($endpoint['headers'])) $params['headers'] = $endpoint['headers'];
             if(isset($endpoint['payload'])) $params['payload'] = $endpoint['payload'];
 
-            $actions = $endpoint["callback"]($this->apiCall($endpoint['method'], $endpoint["url"], $params));
+            $actions = $endpoint["callback"]($this->request($endpoint['method'], $endpoint["url"], $params));
             $breakdown[$endpoint['name']] = $actions;
             $counter = $counter + $actions;
         }
@@ -259,55 +259,62 @@ class SocialWorth
         curl_close($this->connection);
     }
 
-    protected function apiCall($method, $url, $params = array())
+    /**
+     * Performs a request.
+     *
+     * @param string $method The request type (GET, POST, PUT, DELETE).
+     * @param string $url    The URL endpoint to request.
+     * @param array  $params Optional request parameters.
+     *
+     * @return array
+     */
+    protected function request($method, $url, $params = array())
     {
-        global $api;
+        $connection = $this->getConnection();
 
-        if (!$api)
-            $api = curl_init();
-
-        if ($api) {
-            curl_setopt($api, CURLOPT_POST, false);
-            curl_setopt($api, CURLOPT_POSTFIELDS, NULL);
-            if(isset($params['headers'])) curl_setopt($api, CURLOPT_HTTPHEADER, $params['headers']);
-
-            if ($method == 'GET') {
-                curl_setopt($api, CURLOPT_HTTPGET, true);
-
-            } elseif ($method == 'POST') {
-                curl_setopt($api, CURLOPT_POST, true);
-                if(isset($params['payload'])) curl_setopt($api, CURLOPT_POSTFIELDS, $params['payload']);
-
-            } elseif ($method == 'PUT') {
-                curl_setopt($api, CURLOPT_CUSTOMREQUEST, 'PUT');
-
-            } elseif ($method == 'DELETE') {
-                curl_setopt($api, CURLOPT_CUSTOMREQUEST, 'DELETE');
-
-            }
-
-            if ($method != 'POST' && count($params)) {
-                foreach($params as $p => $v) {
-                    $url .= $p . '=' . urlencode($v) . '&';
-                }
-            }
-
-            curl_setopt($api, CURLOPT_URL, rtrim($url, '?&'));
-            curl_setopt($api, CURLOPT_TIMEOUT, 5);
-            curl_setopt($api, CURLOPT_HEADER, false);
-            curl_setopt($api, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($api, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($api, CURLOPT_FOLLOWLOCATION, true);
-
-            if ($raw = curl_exec($api)) {
-                if ($resp = json_decode($raw)) {
-                    return $resp;
-                } else {
-                    return $raw;
-                }
-            }
-
+        if (!$connection) {
             return false;
+        }
+
+        curl_setopt($connection, CURLOPT_POST, false);
+        curl_setopt($connection, CURLOPT_POSTFIELDS, NULL);
+
+        if (isset($params['headers'])) curl_setopt($connection, CURLOPT_HTTPHEADER, $params['headers']);
+
+        if ($method == 'GET') {
+            curl_setopt($connection, CURLOPT_HTTPGET, true);
+
+        } elseif ($method == 'POST') {
+            curl_setopt($connection, CURLOPT_POST, true);
+            if(isset($params['payload'])) curl_setopt($connection, CURLOPT_POSTFIELDS, $params['payload']);
+
+        } elseif ($method == 'PUT') {
+            curl_setopt($connection, CURLOPT_CUSTOMREQUEST, 'PUT');
+
+        } elseif ($method == 'DELETE') {
+            curl_setopt($connection, CURLOPT_CUSTOMREQUEST, 'DELETE');
+
+        }
+
+        if ($method != 'POST' && count($params)) {
+            foreach ($params as $p => $v) {
+                $url .= $p . '=' . urlencode($v) . '&';
+            }
+        }
+
+        curl_setopt($connection, CURLOPT_URL, rtrim($url, '?&'));
+        curl_setopt($connection, CURLOPT_TIMEOUT, 5);
+        curl_setopt($connection, CURLOPT_HEADER, false);
+        curl_setopt($connection, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($connection, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($connection, CURLOPT_FOLLOWLOCATION, true);
+
+        if ($raw = curl_exec($connection)) {
+            if ($resp = json_decode($raw)) {
+                return $resp;
+            } else {
+                return $raw;
+            }
         }
     }
 }
